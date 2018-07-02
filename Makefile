@@ -1,5 +1,5 @@
 CXX := clang++-5.0
-CXXFLAGS := -Wall -std=c++17 -lglut -lGL -lGLU
+CXXFLAGS := -Wall -std=c++17
 DBGFLAG := -g
 #Tell make to make one .out file for each .cpp file found in the current directory
 OBJS := $(patsubst %.cpp, %.o, $(wildcard *.cpp))

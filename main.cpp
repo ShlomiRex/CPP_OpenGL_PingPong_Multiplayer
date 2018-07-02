@@ -3,44 +3,62 @@
 #include <GL/glut.h> // OpenGL Graphics Utility Library
 #include <iostream>
 #include "SimpleDraw.h"
+#include "player.h"
+#include <stdbool.h>
 using namespace std;
 // These variables set the dimensions of the rectanglar region we wish to view.
-const double Xmin = 0.0, Xmax = 3.0;
-const double Ymin = 0.0, Ymax = 3.0;
+const double Xmin = 0, Xmax = 1024;
+const double Ymin = 0, Ymax = 256;
 
-double xDelta = 0;
+#define DeltaY 32
 
-void myKeyboardFunc(unsigned char key, int x, int y)
+const bool isClientLeft = true;
+
+player p1("Player 1",true, 50,0,50,150),p2("Player2",false,900,0,50,150);
+
+void keyboardHandler(unsigned char key, int x, int y)
 {
-    glutPostRedisplay();
     switch (key)
     {
-    case 'A':
-    case 'a':
-        xDelta -= 0.1;
-        glutPostRedisplay();
-        break;
+        case 'W':
+        case 'w':
+            if(isClientLeft) {
+                p1 += {0,DeltaY};
+            } else {
+                p2 += {0, DeltaY};
+            }
+            break;
 
-    case 27: // "27" is the Escape key
-        exit(1);
+        case 'S':
+        case 's':
+            if(isClientLeft) {
+                p1 -= {0,DeltaY};
+            } else {
+                p2 -= {0, DeltaY};
+            }
+            break;
+
+        case 27: // "27" is the Escape key
+            exit(1);
     }
+    glutPostRedisplay();
 }
 
-/*
- * drawScene() handles the animation and the redrawing of the
- *		graphics window contents.
- */
+//drawScene() handles the animation and the redrawing of the graphics window contents.
 void drawScene(void)
 {
     // Clear the rendering window
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glColor3f(255,255,255);
 
-    glBegin(GL_TRIANGLES);
-        glColor3f(1.0, 0.0, 0.0);
-        glVertex3f(0.3 + xDelta, 1.0, 0.5);
-        glVertex3f(2.7 + xDelta, 0.85, 0.0);
-        glVertex3f(2.7 + xDelta, 1.15, 0.0);
-    glEnd();
+    //Draw left player
+    glRecti(p1.getX(), p1.getY(), p1.getX()+p1.getWidth(), p1.getY()+p1.getHeight());
+        //Draw his name
+        //TODO: Add text library
+
+    //Draw right player
+    glRecti(p2.getX(), p2.getY(), p2.getX()+p2.getWidth(), p2.getY()+p2.getHeight());
+
     // Flush the pipeline.  (Not usually necessary.)
     glFlush();
     glutSwapBuffers();
@@ -118,7 +136,7 @@ int main(int argc, char **argv)
     glPointSize(5);
 
     // Set up callback functions for key presses
-    glutKeyboardFunc(myKeyboardFunc); // Handles "normal" ascii symbols
+    glutKeyboardFunc(keyboardHandler); // Handles "normal" ascii symbols
     // glutSpecialFunc( mySpecialKeyFunc );		// Handles "special" keyboard keys
 
     // Set up the callback function for resizing windows
@@ -129,8 +147,6 @@ int main(int argc, char **argv)
 
     // call this whenever window needs redrawing
     glutDisplayFunc(drawScene);
-
-    fprintf(stdout, "Press space bar to toggle images; escape button to quit.\n");
 
     // Start the main loop.  glutMainLoop never returns.
     glutMainLoop();
