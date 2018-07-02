@@ -5,6 +5,7 @@
 #include "player.h"
 #include <stdbool.h>
 #include "server.h"
+#include "client.h"
 using namespace std;
 // These variables set the dimensions of the rectanglar region we wish to view.
 const double Xmin = 0, Xmax = 1024;
@@ -12,7 +13,7 @@ const double Ymin = 0, Ymax = 256;
 
 #define DeltaY 32
 
-const bool isClientLeft = true;
+bool isClientLeft = true;
 
 player 
 p1("Player 1",true, 50,0,50,150),
@@ -124,7 +125,7 @@ void resizeWindow(int w, int h)
 int main(int argc, char **argv)
 {
     ////////////////////////////// User Input and Networking //////////////////////////////
-    
+
     cout << "Do you want to join(j) or create(c) a game?" << endl;
     char choice = getchar();
     if(choice != 'c' && choice != 'j') {
@@ -138,9 +139,12 @@ int main(int argc, char **argv)
         ip = "127.0.0.1";
     if(choice == 'j') {
         cout << "Joining a game..." << endl;
+        start_client(ip);
+        isClientLeft = false;
     } else {
         cout << "Creating a game..." << endl;
         server_start(ip);
+        isClientLeft = true;
     }
 
 

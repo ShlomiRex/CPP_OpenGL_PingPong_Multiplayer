@@ -8,7 +8,7 @@ bool server_start(std::string ip) {
 	addr.sin_addr.s_addr = inet_addr(ip.c_str());
 	bind(sock, (struct sockaddr *) &addr, sizeof(addr)); //Bind to port and ip
 
-    cout << "Waiting for other player to join." << endl;
+    cout << "Waiting for other player to join..." << endl;
     //Receive something from client
 	char buf[BUFF_MAX_LEN];
 	struct sockaddr_in client;
