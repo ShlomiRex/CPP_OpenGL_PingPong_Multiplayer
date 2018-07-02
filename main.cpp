@@ -155,6 +155,8 @@ int main(int argc, char **argv)
 
     }
 
+    
+
     ////////////////////////////// Rendering //////////////////////////////
 
     glutInit(&argc, argv);

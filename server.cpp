@@ -3,7 +3,6 @@ using namespace std;
 
 
 struct sockaddr_in client;
-socklen_t client_size = sizeof(client);
 
 
 void server_start(std::string ip) {
@@ -19,6 +18,7 @@ void server_start(std::string ip) {
 	char buf[BUFF_MAX_LEN];
 	memset(buf, 0, BUFF_MAX_LEN);
     int flags = 0;
+	socklen_t client_size = sizeof(client);
 	recvfrom(sock, buf, BUFF_MAX_LEN, flags, (struct sockaddr*)&client, &client_size); //Receive the client.
 
 	cout << "Got: " << buf << endl;
@@ -26,5 +26,5 @@ void server_start(std::string ip) {
 	cout << "Received from: " << inet_ntoa(client.sin_addr) << endl;
 	cout << "Sending confirmation..." << endl;
 	strcpy(buf, "Hello");
-	sendto(sock, buf, BUFF_MAX_LEN, flags, (struct sockaddr*)&client, client_size); //Send confirmation to client.
+	sendto(sock, buf, BUFF_MAX_LEN, flags, (struct sockaddr*)&client, sizeof(client)); //Send confirmation to client.
 }

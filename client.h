@@ -6,5 +6,6 @@
 #include <netinet/in.h>
 #include <iostream>
 #include <arpa/inet.h>
+#include "network_handler.h"
 
 void start_client(std::string ip);
