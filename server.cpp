@@ -17,12 +17,14 @@ void server_start(std::string ip) {
     cout << "Waiting for other player to join..." << endl;
     //Receive something from client
 	char buf[BUFF_MAX_LEN];
-
+	memset(buf, 0, BUFF_MAX_LEN);
     int flags = 0;
 	recvfrom(sock, buf, BUFF_MAX_LEN, flags, (struct sockaddr*)&client, &client_size); //Receive the client.
 
 	cout << "Got: " << buf << endl;
+	memset(buf, 0, BUFF_MAX_LEN);
 	cout << "Received from: " << inet_ntoa(client.sin_addr) << endl;
-	cout << "Sending confirmation: " << endl;
-	sendto(sock, buf, BUFF_MAX_LEN, flags, (struct sockaddr*)&client, client_size);
+	cout << "Sending confirmation..." << endl;
+	strcpy(buf, "Hello");
+	sendto(sock, buf, BUFF_MAX_LEN, flags, (struct sockaddr*)&client, client_size); //Send confirmation to client.
 }

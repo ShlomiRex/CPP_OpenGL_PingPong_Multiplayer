@@ -14,14 +14,16 @@ void start_client(string ip) {
 
 	struct sockaddr* endpoint_sockaddr = (struct sockaddr*)&endpoint_addr;
 
-	char* buf = "Hi";
+	char buf[BUFF_MAX_LEN];
+	memset(buf, 0, BUFF_MAX_LEN);
     int flags = 0;
+	cout << "Sending to server..." << endl;
 	sendto(sock, buf, 3, flags, endpoint_sockaddr , sizeof(endpoint_addr)); //Send to server
 	
-	
+	cout << "Receiving confirmation from server..." << endl;
+	memset(buf, 0, BUFF_MAX_LEN);
 	recvfrom(sock, buf, BUFF_MAX_LEN, flags, (struct sockaddr*)&server, &server_size); //Receive from server
-
-	cout << inet_ntoa(server.sin_addr) << endl;
+	cout << "Server sent me: " << buf << endl;
 }
 
 /*
