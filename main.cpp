@@ -1,18 +1,6 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <GL/glut.h> // OpenGL Graphics Utility Library
-#include <iostream>
-#include "player.h"
-#include <stdbool.h>
-#include "server.h"
-#include "client.h"
-#include <thread>
-using namespace std;
-// These variables set the dimensions of the rectanglar region we wish to view.
-const double Xmin = 0, Xmax = 1024;
-const double Ymin = 0, Ymax = 256;
+#include "main.h"
 
-#define DeltaY 32
+using namespace std;
 
 bool isClientLeft = true;
 

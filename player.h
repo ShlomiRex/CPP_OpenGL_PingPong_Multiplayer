@@ -1,3 +1,4 @@
+#pragma once
 #include <string>
 #include "point.h"
 #include <stdbool.h>

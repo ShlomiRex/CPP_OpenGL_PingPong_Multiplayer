@@ -1,4 +1,4 @@
-#include <GL/gl.h>
+#pragma once
 class point {
 protected:
     float x,y;
