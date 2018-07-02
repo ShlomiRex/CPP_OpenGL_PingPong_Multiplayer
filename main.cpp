@@ -4,6 +4,7 @@
 #include <iostream>
 #include "player.h"
 #include <stdbool.h>
+#include "server.h"
 using namespace std;
 // These variables set the dimensions of the rectanglar region we wish to view.
 const double Xmin = 0, Xmax = 1024;
@@ -122,6 +123,30 @@ void resizeWindow(int w, int h)
 
 int main(int argc, char **argv)
 {
+    ////////////////////////////// User Input and Networking //////////////////////////////
+    
+    cout << "Do you want to join(j) or create(c) a game?" << endl;
+    char choice = getchar();
+    if(choice != 'c' && choice != 'j') {
+        cerr << "You'r choice is incorrect." << endl;
+        exit(1);
+    }
+    string ip;
+    cout << "Please enter ip (enter 'd' for localhost default ip): " << endl;
+    cin >> ip;
+    if(ip == "d")
+        ip = "127.0.0.1";
+    if(choice == 'j') {
+        cout << "Joining a game..." << endl;
+    } else {
+        cout << "Creating a game..." << endl;
+        server_start(ip);
+    }
+
+
+
+    ////////////////////////////// Rendering //////////////////////////////
+
     glutInit(&argc, argv);
 
     // The image is not animated so single buffering is OK.

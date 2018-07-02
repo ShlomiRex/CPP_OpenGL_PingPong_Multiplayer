@@ -1,0 +1,2 @@
+#define SERVER_PORT 8888
+#define BUFF_MAX_LEN 256

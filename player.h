@@ -1,5 +1,5 @@
 #include <string>
-#include "point.hpp"
+#include "point.h"
 #include <stdbool.h>
 using namespace std;
 class player {
