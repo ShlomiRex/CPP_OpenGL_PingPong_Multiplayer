@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <GL/glut.h> // OpenGL Graphics Utility Library
 #include <iostream>
-#include "SimpleDraw.h"
 #include "player.h"
 #include <stdbool.h>
 using namespace std;
@@ -14,7 +13,9 @@ const double Ymin = 0, Ymax = 256;
 
 const bool isClientLeft = true;
 
-player p1("Player 1",true, 50,0,50,150),p2("Player2",false,900,0,50,150);
+player 
+p1("Player 1",true, 50,0,50,150),
+p2("Player2",false,900,0,50,150);
 
 void keyboardHandler(unsigned char key, int x, int y)
 {
