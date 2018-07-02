@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include "server.h"
 #include "client.h"
+#include <thread>
 using namespace std;
 // These variables set the dimensions of the rectanglar region we wish to view.
 const double Xmin = 0, Xmax = 1024;
@@ -122,6 +123,12 @@ void resizeWindow(int w, int h)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 */
 
+void foo() {
+    for(int i = 0; i < 1000; i++) {
+        cout << "foo called" << endl;
+    }
+}
+
 int main(int argc, char **argv)
 {
     ////////////////////////////// User Input and Networking //////////////////////////////
@@ -133,10 +140,10 @@ int main(int argc, char **argv)
         exit(1);
     }
     string ip;
-    cout << "Please enter ip (enter 'd' for localhost default ip): " << endl;
+    cout << "Please enter ip (enter 'd' for default server ip): " << endl;
     cin >> ip;
     if(ip == "d")
-        ip = "127.0.0.1";
+        ip = DEFAULT_IP;
     if(choice == 'j') {
         cout << "Joining a game..." << endl;
         start_client(ip);
@@ -145,9 +152,8 @@ int main(int argc, char **argv)
         cout << "Creating a game..." << endl;
         server_start(ip);
         isClientLeft = true;
+
     }
-
-
 
     ////////////////////////////// Rendering //////////////////////////////
 

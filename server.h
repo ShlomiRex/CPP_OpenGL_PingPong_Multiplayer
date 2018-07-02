@@ -9,4 +9,4 @@
 #include <string>
 #include <iostream>
 //Return true if this current client is the left board, return false if the client is the right board
-bool server_start(std::string ip);
+void server_start(std::string ip);

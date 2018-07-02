@@ -1,6 +1,12 @@
 #include "server.h"
 using namespace std;
-bool server_start(std::string ip) {
+
+
+struct sockaddr_in client;
+socklen_t client_size = sizeof(client);
+
+
+void server_start(std::string ip) {
 	int sock = socket(AF_INET, SOCK_DGRAM, 0); //Address Family: IPv4. Type: Datagram (UDP). Protocol: 0 (default).
 	struct sockaddr_in addr;
 	addr.sin_family = AF_INET;
@@ -11,11 +17,12 @@ bool server_start(std::string ip) {
     cout << "Waiting for other player to join..." << endl;
     //Receive something from client
 	char buf[BUFF_MAX_LEN];
-	struct sockaddr_in client;
-    socklen_t size = sizeof(client);
+
     int flags = 0;
-	recvfrom(sock, buf, BUFF_MAX_LEN, flags, (struct sockaddr*)&client, &size);
-	printf("Got: %s\n", buf);
-    printf("Received from: %s\n", inet_ntoa(client.sin_addr));
-    return true;
+	recvfrom(sock, buf, BUFF_MAX_LEN, flags, (struct sockaddr*)&client, &client_size); //Receive the client.
+
+	cout << "Got: " << buf << endl;
+	cout << "Received from: " << inet_ntoa(client.sin_addr) << endl;
+	cout << "Sending confirmation: " << endl;
+	sendto(sock, buf, BUFF_MAX_LEN, flags, (struct sockaddr*)&client, client_size);
 }

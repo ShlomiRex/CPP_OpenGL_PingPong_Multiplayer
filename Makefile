@@ -1,5 +1,5 @@
 CXX := clang++-5.0
-CXXFLAGS := -Wall -std=c++17
+CXXFLAGS := -Wall -std=c++17 -pthread
 DBGFLAG := -g
 OBJS := $(patsubst %.cpp, %.o, $(wildcard *.cpp))
 LIBS := -lglut -lGL -lGLU
