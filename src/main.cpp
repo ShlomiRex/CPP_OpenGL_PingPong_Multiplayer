@@ -2,9 +2,11 @@
 
 using namespace std;
 
-bool isClientLeft = true;
+static bool isThisClientLeftPlayer = true;
+static bool game_runnig = true;
+static thread network_thread;
 
-player 
+static player 
 p1("Player 1",true, 50,0,50,150),
 p2("Player2",false,900,0,50,150);
 
@@ -14,7 +16,7 @@ void keyboardHandler(unsigned char key, int x, int y)
     {
         case 'W':
         case 'w':
-            if(isClientLeft) {
+            if(isThisClientLeftPlayer) {
                 p1 += {0,DeltaY};
             } else {
                 p2 += {0, DeltaY};
@@ -23,7 +25,7 @@ void keyboardHandler(unsigned char key, int x, int y)
 
         case 'S':
         case 's':
-            if(isClientLeft) {
+            if(isThisClientLeftPlayer) {
                 p1 -= {0,DeltaY};
             } else {
                 p2 -= {0, DeltaY};
@@ -111,11 +113,6 @@ void resizeWindow(int w, int h)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 */
 
-void foo() {
-    for(int i = 0; i < 1000; i++) {
-        cout << "foo called" << endl;
-    }
-}
 
 int main(int argc, char **argv)
 {
@@ -130,17 +127,20 @@ int main(int argc, char **argv)
     string ip;
     cout << "Please enter ip (enter 'd' for default server ip): " << endl;
     cin >> ip;
+
+
+
     if(ip == "d")
         ip = DEFAULT_IP;
     if(choice == 'j') {
         cout << "Joining a game..." << endl;
         start_client(ip);
-        isClientLeft = false;
+       // network_thread = thread(client_network_loop, game_runnig, p2);
+
     } else {
         cout << "Creating a game..." << endl;
         server_start(ip);
-        isClientLeft = true;
-
+        goto finish;
     }
 
     
@@ -177,5 +177,6 @@ int main(int argc, char **argv)
     // Start the main loop.  glutMainLoop never returns.
     glutMainLoop();
 
+finish:
     return (0); // This line is never reached.
 }
