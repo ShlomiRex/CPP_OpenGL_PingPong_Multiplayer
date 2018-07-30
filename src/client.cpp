@@ -10,24 +10,13 @@ void start_client(string ip) {
 	endpoint_addr.sin_port = htons(SERVER_PORT);
 	endpoint_addr.sin_addr.s_addr = inet_addr(ip.c_str());
 
-	//Send login to server
-	char buf[BUFF_MAX_LEN];
-	//strcpy(buf, "Hi"); //TODO: Uncomment
-
-	//TODO: Remove below
 	test_class t;
-	t.a = 12;
-	t.b = 's';
-	//TODO: Remove above
+	t.a = 'E';
+	t.b = 69;
 
 	cout << "Sending to: " << inet_ntoa(endpoint_addr.sin_addr) << endl;
 	cout << "Sending to server..." << endl;
-	send_packet(sock, &t, sizeof(t),endpoint_addr); //TODO: Change second argument to be 'buf'
-
-	//Receive OK from server
-	cout << "Receiving confirmation from server..." << endl;
-	receive_packet(sock, buf, sizeof(t),server);
-	cout << "Server sent me: " << buf << endl;
+	send_packet(sock, &t, sizeof(t),endpoint_addr); 
 }
 
 pair<char*, size_t> construct_buffer(int player_pos_x, int player_pos_y) {

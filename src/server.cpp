@@ -16,19 +16,12 @@ void server_start(string ip) {
 	cout << "The Server ip: " << inet_ntoa(addr.sin_addr) << endl;
     cout << "Waiting for other player to join..." << endl;
 
-    //Receive login from client 1
-	char buf[BUFF_MAX_LEN];
-	receive_packet(sock, buf, sizeof(buf), client);
+	test_class t;
+	receive_packet(sock, &t, sizeof(t), client);
 
-	cout << "Got: " << buf << endl;
 	cout << "Received from: " << inet_ntoa(client.sin_addr) << endl;
+	cout << "t.a = " << t.a << endl;
 	cout << "Sending confirmation..." << endl;
-	
-	usleep(100000); //Wait 0.1 seconds
-
-	strcpy(buf, "Hello");
-	send_packet(sock, buf, sizeof(buf),client);
-	cout << "Sent." << endl;
 }
 
 
