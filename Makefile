@@ -38,7 +38,7 @@ create_directories:
 #Clean
 .PHONY: clean
 clean:
-	rm -fr *.o *.out *.exe
+	find . \( -name '*.o' -or -name '*.out' -or -name '*.exe' \) -delete
 
 #Automatic git commit
 git:
