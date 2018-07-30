@@ -1,5 +1,5 @@
 #pragma once
-#include "network_handler.h"
+#include "network.h"
 void start_client(std::string ip);
 
 //Send packets to server from the opponenet side

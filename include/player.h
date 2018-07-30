@@ -14,13 +14,13 @@ public:
         
     }
 
-    player& operator+=(pair<int,int> p) {
+    inline player& operator+=(pair<int,int> p) {
         pos_x += p.first;
         pos_y += p.second;
         return *this;
     }
 
-    player& operator-=(pair<int,int> p) {
+    inline player& operator-=(pair<int,int> p) {
         pos_x -= p.first;
         pos_y -= p.second;
         return *this;

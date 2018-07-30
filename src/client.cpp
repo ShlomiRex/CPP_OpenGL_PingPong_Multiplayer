@@ -2,6 +2,7 @@
 using namespace std;
 
 void start_client(string ip) {
+	//Init socket
 	struct sockaddr_in server;
 	int sock = socket(AF_INET, SOCK_DGRAM, 0); //Address Family: IPv4. Type: Datagram (UDP). Protocol: 0 (default).
 	struct sockaddr_in endpoint_addr;
@@ -9,13 +10,23 @@ void start_client(string ip) {
 	endpoint_addr.sin_port = htons(SERVER_PORT);
 	endpoint_addr.sin_addr.s_addr = inet_addr(ip.c_str());
 
+	//Send login to server
 	char buf[BUFF_MAX_LEN];
-	strcpy(buf, "Hi");
+	//strcpy(buf, "Hi"); //TODO: Uncomment
+
+	//TODO: Remove below
+	test_class t;
+	t.a = 12;
+	t.b = 's';
+	//TODO: Remove above
+
 	cout << "Sending to: " << inet_ntoa(endpoint_addr.sin_addr) << endl;
 	cout << "Sending to server..." << endl;
-	send_packet(sock, buf, endpoint_addr);
+	send_packet(sock, &t, sizeof(t),endpoint_addr); //TODO: Change second argument to be 'buf'
+
+	//Receive OK from server
 	cout << "Receiving confirmation from server..." << endl;
-	receive_packet(sock, buf, server);
+	receive_packet(sock, buf, sizeof(t),server);
 	cout << "Server sent me: " << buf << endl;
 }
 
