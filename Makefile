@@ -4,8 +4,9 @@
 
 
 CXX := clang++-5.0
-CXXFLAGS := -Wall -std=c++17 -Iinclude #Insted of include you can create other directory and type: -Iheaders
+CXXFLAGS := -Wextra -Wall -std=c++11 -Iinclude #Insted of include you can create other directory and type: -Iheaders
 DBGFLAG := -g
+RELEASE := -O3
 LDFLAGS := -lglut -lGL -lGLU -lpthread #For linker
 
 #Project Structure
@@ -20,7 +21,7 @@ OBJECTS = $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SOURCES))
 
 #Run
 run: link
-	./bin/main.out
+	./$(BIN_DIR)/main.out
 
 #Link
 link: $(OBJECTS)
@@ -50,10 +51,13 @@ git:
 test1:
 	$(CXX) $(CXXFLAGS) $(DBGFLAG) -c "$(TEST_DIR)/test1/client.cpp" -o "$(BIN_DIR)/test1_client.out"
 	$(CXX) $(CXXFLAGS) $(DBGFLAG) -c "$(TEST_DIR)/test1/server.cpp" -o "$(BIN_DIR)/test1_server.out"
-.PHONY: test1_server test1_client
-test1_server:
-	./bin/test1_server.out
-test1_client:
-	./bin/test1_client.out
+
+create_server: link
+	./$(BIN_DIR)/main.out < $(TEST_DIR)/create_server_input.txt
+
+create_client: link
+	./$(BIN_DIR)/main.out < $(TEST_DIR)/create_client_input.txt
+
+
 
 	

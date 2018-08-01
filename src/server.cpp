@@ -1,6 +1,6 @@
 #include "server.h"
 using namespace std;
-
+using namespace proto;
 struct sockaddr_in client;
 
 void server_start(string ip) {
@@ -16,22 +16,24 @@ void server_start(string ip) {
 	cout << "The Server ip: " << inet_ntoa(addr.sin_addr) << endl;
     cout << "Waiting for other player to join..." << endl;
 
-	test_class t;
-	receive_packet(sock, &t, sizeof(t), client);
 
-	cout << "Received from: " << inet_ntoa(client.sin_addr) << endl;
-	cout << "t.a = " << t.a << endl;
-	cout << "Sending confirmation..." << endl;
-}
+	void* buff = malloc(BUFF_MAX_LEN);
 
 
-pair<char*, size_t> construct_buffer(int player_pos_x, int player_pos_y, int ball_pos_x, int ball_pos_y) {
+	int players_logged_in = 0;
 
-}
+	while(players_logged_in != 2) {
+		receive_packet(sock, buff, BUFF_MAX_LEN, client);
+		cout << "> Received from: " << inet_ntoa(client.sin_addr) << endl;
 
-//Send packets to opponent from the server side
-void server_network_loop(bool& running, player& me) {
-	while(running) {
-		
+
+		basic_packet* bp = (basic_packet*)buff;
+		if(bp->proto != LOGIN) {
+			cerr << "> Packet protocol: " << getProtoName(bp->proto) << " is not login packet" << endl;
+		} else {
+			login_packet* lp = (login_packet*)buff;
+			cout << "Player 1 name: " << lp->name << endl;
+		}
 	}
+
 }
