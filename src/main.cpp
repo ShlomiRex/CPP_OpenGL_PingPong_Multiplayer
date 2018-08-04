@@ -1,14 +1,15 @@
 #include "main.h"
 
 using namespace std;
-
-static bool isThisClientLeftPlayer = true;
-static bool game_runnig = true;
 static thread network_thread;
-
+/*
 static player 
 p1("Player 1",true, 50,0,50,150),
 p2("Player2",false,900,0,50,150);
+*/
+
+static player me;
+static player opponent;
 
 void keyboardHandler(unsigned char key, int x, int y)
 {
@@ -16,20 +17,12 @@ void keyboardHandler(unsigned char key, int x, int y)
     {
         case 'W':
         case 'w':
-            if(isThisClientLeftPlayer) {
-                p1 += {0,DeltaY};
-            } else {
-                p2 += {0, DeltaY};
-            }
+            me += {0,DeltaY};
             break;
 
         case 'S':
         case 's':
-            if(isThisClientLeftPlayer) {
-                p1 -= {0,DeltaY};
-            } else {
-                p2 -= {0, DeltaY};
-            }
+            me -= {0, DeltaY};
             break;
 
         case 27: // "27" is the Escape key
@@ -45,13 +38,13 @@ void drawScene(void)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glColor3f(255,255,255);
 
-    //Draw left player
-    glRecti(p1.getX(), p1.getY(), p1.getX()+p1.getWidth(), p1.getY()+p1.getHeight());
-        //Draw his name
-        //TODO: Add text library
+    //Draw me
+    glRecti(me.getX(), me.getY(), me.getX()+me.getWidth(), me.getY()+me.getHeight());
+    //Draw my name?
+    //TODO: Add text library
 
-    //Draw right player
-    glRecti(p2.getX(), p2.getY(), p2.getX()+p2.getWidth(), p2.getY()+p2.getHeight());
+    //Draw opponent
+    glRecti(opponent.getX(), opponent.getY(), opponent.getX()+opponent.getWidth(), opponent.getY()+opponent.getHeight());
 
     // Flush the pipeline.  (Not usually necessary.)
     glFlush();
@@ -128,13 +121,11 @@ int main(int argc, char **argv)
     cout << "Please enter ip (enter 'd' for default server ip): " << endl;
     cin >> ip;
 
-
-
     if(ip == "d")
         ip = DEFAULT_IP;
     if(choice == 'j') {
         cout << "Joining a game..." << endl;
-        start_client(ip);
+        start_client(ip, &me, &opponent);
        // network_thread = thread(client_network_loop, game_runnig, p2);
 
     } else {
@@ -178,5 +169,5 @@ int main(int argc, char **argv)
     glutMainLoop();
 
 finish:
-    return (0); // This line is never reached.
+    return (0); // This line is never reached by client, but by server yes.
 }

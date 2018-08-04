@@ -14,6 +14,12 @@ namespace proto {
         switch(p) {
             case LOGIN:
                 return "LOGIN";
+            case LOGIN_CONFIRM:
+                return "LOGIN_CONFIRM";
+            case LOGIN_NOT_CONFIRM:
+                return "LOGIN_NOT_CONFIRM";
+            case GAME_STARTS:
+                return "GAME_STARTS";
             case FIN:
                 return "FIN";
             case PLAYER_POS:

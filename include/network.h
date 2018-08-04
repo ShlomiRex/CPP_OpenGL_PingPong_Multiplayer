@@ -13,33 +13,65 @@
 #include <unistd.h>
 
 #define SERVER_PORT 8888
-#define BUFF_MAX_LEN 32 //in bytes
+#define BUFF_MAX_LEN 1024 //in bytes
 #define DEFAULT_IP "127.69.69.69"
+
 
 #define RECEIVE_FLAGS 0 //Flags for sock recv
 #define SEND_FLAGS 0 //Flags for sock send
 
 namespace proto {
     typedef enum proto_t {
-        NO_PROTO, LOGIN, FIN, PLAYER_POS, TEST
+        NO_PROTO, LOGIN, LOGIN_CONFIRM, LOGIN_NOT_CONFIRM, GAME_STARTS, FIN, PLAYER_POS, TEST
     } proto_t;
 
+    //All packets must inherit this struct
     struct basic_packet {
         const proto_t proto;
         basic_packet() : proto(NO_PROTO) {}
         basic_packet(proto_t proto) : proto(proto) {}
+        
     };
 
+    //Client send login to server
     struct login_packet : public basic_packet{
-        const char* name;
-        size_t length;
-        login_packet(const char* name, size_t length) : basic_packet(LOGIN), name(name), length(length) {}
+        char name[PLAYER_NAME_MAX_LENGTH];
+        login_packet(const char n[PLAYER_NAME_MAX_LENGTH]) : basic_packet(LOGIN) {
+            strncpy(name, n, PLAYER_NAME_MAX_LENGTH);
+        }
+    };
+
+    //Server confirms client login and sends him default attributes
+    struct login_confirm_packet : public basic_packet {
+        bool isLeft;
+        unsigned int player_id;
+        int starting_pos_x, starting_pos_y;
+        size_t starting_width, starting_height;
+        login_confirm_packet(bool isLeft, unsigned int player_id, int starting_pos_x, int starting_pos_y, size_t starting_width, size_t starting_height) 
+            :  basic_packet(LOGIN_CONFIRM), isLeft(isLeft), player_id(player_id),
+               starting_pos_x(starting_pos_x), starting_pos_y(starting_pos_y),
+               starting_width(starting_width), starting_height(starting_height) {}
+    };
+
+    struct player_pos_packet : public basic_packet {
+        int x, y;
+        player_pos_packet(int x, int y) : basic_packet(PLAYER_POS), x(x), y(y) {}
+    };
+    //When 2 players connect to server, the server sends attributes to each player, the data is about the other player.
+    //Meanning: Left player recevies right player stats
+    //Right player receives left player stats
+    struct game_starts_packet : public basic_packet {
+        int starting_pos_x, starting_pos_y;
+        size_t starting_width, starting_height;
+        game_starts_packet(int starting_pos_x, int starting_pos_y, size_t starting_width, size_t starting_height) 
+            : basic_packet(GAME_STARTS), starting_pos_x(starting_pos_x), starting_pos_y(starting_pos_y),
+              starting_width(starting_width), starting_height(starting_height) {}
     };
 
     struct test_packet : public basic_packet{
         char c;
         int i;
-        test_packet() : c('S'), i(20) {}
+        test_packet() : basic_packet(TEST), c('S'), i(666) {}
     };
     const char* getProtoName(const proto_t& p);
 }

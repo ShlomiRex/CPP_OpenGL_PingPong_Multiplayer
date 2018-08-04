@@ -37,7 +37,6 @@ create_directories:
 	
 
 #Clean
-.PHONY: clean
 clean:
 	find . \( -name '*.o' -or -name '*.out' -or -name '*.exe' \) -delete
 
@@ -55,8 +54,12 @@ test1:
 create_server: link
 	./$(BIN_DIR)/main.out < $(TEST_DIR)/create_server_input.txt
 
-create_client: link
+create_client1: link
 	./$(BIN_DIR)/main.out < $(TEST_DIR)/create_client_input.txt
+
+create_client2: link
+	./$(BIN_DIR)/main.out < $(TEST_DIR)/create_client_input2.txt
+
 
 
 
