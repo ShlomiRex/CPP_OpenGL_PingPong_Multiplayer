@@ -1,6 +1,11 @@
 #include "client.h"
+
 using namespace std;
 using namespace proto;
+
+int sock;
+
+struct sockaddr_in server;
 
 void start_client(string ip, player* me, player* opponent) {
 	if(me == nullptr || opponent == nullptr) {
@@ -8,16 +13,16 @@ void start_client(string ip, player* me, player* opponent) {
 		exit(1);
 	}
 	//Init socket
-	int sock = socket(AF_INET, SOCK_DGRAM, 0); //Address Family: IPv4. Type: Datagram (UDP). Protocol: 0 (default).
-	struct sockaddr_in server;
+	sock = socket(AF_INET, SOCK_DGRAM, 0); //Address Family: IPv4. Type: Datagram (UDP). Protocol: 0 (default).
 	server.sin_family = AF_INET;
 	server.sin_port = htons(SERVER_PORT);
 	server.sin_addr.s_addr = inet_addr(ip.c_str());
 
 	string name;
-	void* buf = malloc(BUFF_MAX_LEN);
 	basic_packet* bp;
 	login_confirm_packet* lcp;
+
+	void* buf = malloc(BUFF_MAX_LEN);
 
 enter_name:
 	cout << "Please enter your name: " << endl;
@@ -69,7 +74,34 @@ try_start_game:
 		opponent->pos_y = gsp->starting_pos_y;
 		//fisnished initializing clients players. Game starts!
 		cout << "Let the games begin!" << endl;
-
-		
 	}
+
+	free(buf);
+}
+
+void sendto_network_loop(bool* running, player* me) {
+	player_pos_packet ppp{me->pos_x, me->pos_y};
+	void* buff = malloc(BUFF_MAX_LEN);
+	while(running) {
+		//Send my location
+		cout << ">Sending my location" << endl;
+		send_packet(sock, &ppp, sizeof(player_pos_packet), server);
+		
+		usleep(500000);
+		ppp.update(me->pos_x, me->pos_y);
+	}
+	free(buff);
+}
+
+void recvfrom_network_loop(bool* running, player* opponent) {
+	player_pos_packet* ppp_response;
+	void* buff = malloc(BUFF_MAX_LEN);
+	while(running) {
+		//Receive location
+		receive_packet(sock, buff, BUFF_MAX_LEN, server);
+		ppp_response = (player_pos_packet*)buff;
+		opponent->updatePos(ppp_response->x, ppp_response->y);
+		cout << ">Received opponent location" << endl;
+	}
+	free(buff);
 }

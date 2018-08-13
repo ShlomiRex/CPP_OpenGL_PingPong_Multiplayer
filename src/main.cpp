@@ -1,7 +1,8 @@
 #include "main.h"
 
 using namespace std;
-static thread network_thread;
+static thread client_network_thread_sendto;
+static thread client_network_thread_recvfrom;
 /*
 static player 
 p1("Player 1",true, 50,0,50,150),
@@ -10,6 +11,7 @@ p2("Player2",false,900,0,50,150);
 
 static player me;
 static player opponent;
+static bool running = true;
 
 void keyboardHandler(unsigned char key, int x, int y)
 {
@@ -49,6 +51,8 @@ void drawScene(void)
     // Flush the pipeline.  (Not usually necessary.)
     glFlush();
     glutSwapBuffers();
+
+    glutPostRedisplay(); //Re render, idle rendering...
 }
 
 // Called when the window is resized
@@ -106,7 +110,6 @@ void resizeWindow(int w, int h)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 */
 
-
 int main(int argc, char **argv)
 {
     ////////////////////////////// User Input and Networking //////////////////////////////
@@ -117,24 +120,26 @@ int main(int argc, char **argv)
         cerr << "You'r choice is incorrect." << endl;
         exit(1);
     }
-    string ip;
+    string server_ip;
+    string tmp;
     cout << "Please enter ip (enter 'd' for default server ip): " << endl;
-    cin >> ip;
+    cin >> tmp;
 
-    if(ip == "d")
-        ip = DEFAULT_IP;
+    if(tmp == "d")
+        server_ip = SERVER_DEFAULT_IP;
     if(choice == 'j') {
         cout << "Joining a game..." << endl;
-        start_client(ip, &me, &opponent);
-       // network_thread = thread(client_network_loop, game_runnig, p2);
-
+        start_client(server_ip, &me, &opponent);
+        
+        client_network_thread_sendto = thread(sendto_network_loop, &running, &me);
+        client_network_thread_recvfrom = thread(recvfrom_network_loop, &running, &opponent);
     } else {
         cout << "Creating a game..." << endl;
-        server_start(ip);
+        server_start(server_ip);
         goto finish;
     }
 
-    
+    cout << "Starting game :D enjoy" << endl;
 
     ////////////////////////////// Rendering //////////////////////////////
 

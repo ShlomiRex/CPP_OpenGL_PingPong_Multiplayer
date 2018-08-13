@@ -14,7 +14,7 @@
 
 #define SERVER_PORT 8888
 #define BUFF_MAX_LEN 1024 //in bytes
-#define DEFAULT_IP "127.69.69.69"
+#define SERVER_DEFAULT_IP "127.69.69.69"
 
 
 #define RECEIVE_FLAGS 0 //Flags for sock recv
@@ -56,6 +56,10 @@ namespace proto {
     struct player_pos_packet : public basic_packet {
         int x, y;
         player_pos_packet(int x, int y) : basic_packet(PLAYER_POS), x(x), y(y) {}
+        void update(int new_x, int new_y) {
+            x = new_x;
+            y = new_y;
+        }
     };
     //When 2 players connect to server, the server sends attributes to each player, the data is about the other player.
     //Meanning: Left player recevies right player stats
@@ -77,7 +81,7 @@ namespace proto {
 }
 
 //target = Who to send the packet
-void send_packet(int sock, const void* buf, size_t size, struct sockaddr_in &target);
+size_t send_packet(int sock, const void* buf, size_t size, struct sockaddr_in &target);
 //source = Who send me the packet
-void receive_packet(int sock, void* buf, size_t size, struct sockaddr_in &source);
+size_t receive_packet(int sock, void* buf, size_t size, struct sockaddr_in &source);
 

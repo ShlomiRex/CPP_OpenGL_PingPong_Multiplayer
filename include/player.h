@@ -21,6 +21,7 @@ using namespace std;
 #define DEFAULT_STARTING_HEIGHT 150
 
 struct player {
+    
     char name[PLAYER_NAME_MAX_LENGTH];
     bool isLeft; //Is left board? (on GUI)
     int pos_x, pos_y;
@@ -37,6 +38,11 @@ struct player {
       height(height),
       id(id) {
         setName(name);
+    }
+
+    void updatePos(int new_x, int new_y) {
+        pos_x = new_x;
+        pos_y = new_y;
     }
 
     inline player& operator+=(pair<int,int> p) {

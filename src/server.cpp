@@ -69,4 +69,40 @@ try_login2:
 
 	send_packet(sock, &gsp_to_left, sizeof(game_starts_packet), client1); //Client 1 is left
 	send_packet(sock, &gsp_to_right, sizeof(game_starts_packet), client2); //Client 2 is right
+
+	//!//////////////////////////The game begins!////////////////!////////////////
+
+	struct sockaddr_in client_addr;
+	struct sockaddr_storage s;
+
+	size_t num_of_bytes;
+	//TODO: Handle exit of while loop
+	while(1) {
+		num_of_bytes = receive_packet(sock, buff, BUFF_MAX_LEN, client_addr);
+		bp = (basic_packet*)&buff;
+		if(client_addr.sin_addr.s_addr == client1.sin_addr.s_addr && client_addr.sin_port == client1.sin_port) {
+			//Client 1 send this.
+
+			//TODO: Decedie what to do with packets with proto != player pos
+			//if(bp->proto == proto::PLAYER_POS) {
+				//Send to client 2 the client 1 position.
+				//send_packet(sock, buff, BUFF_MAX_LEN, client2);
+			//}
+
+			send_packet(sock, buff, num_of_bytes, client2);
+		} else {
+			//Client 2 send this.
+
+			//TODO: Decedie what to do with packets with proto != player pos
+			//if(bp->proto == proto::PLAYER_POS) {
+				//Send to client 1 the client 2 position.
+				//send_packet(sock, buff, BUFF_MAX_LEN, client1);
+			//}
+
+						
+			//Send to client 1 the client 2 position.
+			send_packet(sock, buff, num_of_bytes, client1);
+		}
+	}
+	free(buff);
 }
