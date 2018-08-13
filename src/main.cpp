@@ -127,6 +127,8 @@ int main(int argc, char **argv)
 
     if(tmp == "d")
         server_ip = SERVER_DEFAULT_IP;
+    else
+        server_ip = tmp;
     if(choice == 'j') {
         cout << "Joining a game..." << endl;
         start_client(server_ip, &me, &opponent);
