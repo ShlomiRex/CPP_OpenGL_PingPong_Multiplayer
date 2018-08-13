@@ -137,7 +137,7 @@ int main(int argc, char **argv)
         client_network_thread_recvfrom = thread(recvfrom_network_loop, &running, &opponent);
     } else {
         cout << "Creating a game..." << endl;
-        server_start(server_ip);
+        server_start(&server_ip);
         goto finish;
     }
 

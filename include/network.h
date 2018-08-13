@@ -13,7 +13,7 @@
 #include <unistd.h>
 
 #define SERVER_PORT 8888
-#define BUFF_MAX_LEN 1024 //in bytes
+#define BUFF_MAX_LEN 512 //in bytes
 #define SERVER_DEFAULT_IP "127.69.69.69"
 
 

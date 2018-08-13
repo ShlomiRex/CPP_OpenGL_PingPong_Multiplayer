@@ -60,7 +60,8 @@ create_client1: link
 create_client2: link
 	./$(BIN_DIR)/main.out < $(TEST_DIR)/create_client_input2.txt
 
-
+test_server_connection:
+	netstat -a | grep 8888
 
 
 	
