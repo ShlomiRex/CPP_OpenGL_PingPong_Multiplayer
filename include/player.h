@@ -2,7 +2,7 @@
 #include <utility>
 #include <string.h>
 #include <string>
-#include "point.h"
+#include "geometry.h"
 #include "limits.h"
 #include <iostream>
 #include <stdbool.h>
@@ -20,66 +20,25 @@ using namespace std;
 #define DEFAULT_STARTING_WIDTH 50
 #define DEFAULT_STARTING_HEIGHT 150
 
+//Delta of moving players
+#define DeltaY 32
+
 struct player {
     
     char name[PLAYER_NAME_MAX_LENGTH];
     bool isLeft; //Is left board? (on GUI)
-    int pos_x, pos_y;
-    size_t width, height;
+    rectangle<int> body;
     unsigned int id;
-
     player() {}
-    
     player(char name[PLAYER_NAME_MAX_LENGTH], int x, int y, size_t width, size_t height, bool isLeft, unsigned int id) 
-    : isLeft(isLeft),
-      pos_x(x),
-      pos_y(y),
-      width(width),
-      height(height),
-      id(id) {
+    : isLeft(isLeft), body(point<int>(x,y),width, height)
+    {
         setName(name);
+        acceleration<int> a{10,10};
     }
-
-    void updatePos(int new_x, int new_y) {
-        pos_x = new_x;
-        pos_y = new_y;
-    }
-
-    inline player& operator+=(pair<int,int> p) {
-        pos_x += p.first;
-        pos_y += p.second;
-        return *this;
-    }
-
-    inline player& operator-=(pair<int,int> p) {
-        pos_x -= p.first;
-        pos_y -= p.second;
-        return *this;
-    }
-
-    inline int getX() const {
-        return pos_x;
-    }
-
-    inline int getY() const {
-        return pos_y;
-    }
-
-    inline size_t getWidth() const {
-        return width;
-    }
-
-    inline size_t getHeight() const {
-        return height;
-    }
-
-    inline void setName(const char* name) {
+    void setName(const char* name) {
         strncpy(this->name, name, PLAYER_NAME_MAX_LENGTH);
     }
 
-    ostream& operator<<(ostream& o) {
-        o << "NAME: " << name << " ISLEFT: " << isLeft << " POS_X:" << pos_x << " POS_Y: " << pos_y << endl;
-        return o;
-    }
 };
 

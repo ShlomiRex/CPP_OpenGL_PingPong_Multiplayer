@@ -77,7 +77,6 @@ try_login2:
 	//!//////////////////////////The game begins!////////////////!////////////////
 
 	struct sockaddr_in client_addr;
-	struct sockaddr_storage s;
 
 	size_t num_of_bytes;
 	//TODO: Handle exit of while loop

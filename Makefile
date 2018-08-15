@@ -4,7 +4,7 @@
 
 
 CXX := clang++-5.0
-CXXFLAGS := -Wextra -Wall -std=c++11 -Iinclude #Insted of include you can create other directory and type: -Iheaders
+CXXFLAGS := -Wall -std=c++11 -Iinclude #Insted of include you can create other directory and type: -Iheaders
 DBGFLAG := -g
 RELEASE := -O3
 LDFLAGS := -lglut -lGL -lGLU -lpthread #For linker

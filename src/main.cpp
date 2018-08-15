@@ -3,14 +3,10 @@
 using namespace std;
 static thread client_network_thread_sendto;
 static thread client_network_thread_recvfrom;
-/*
-static player 
-p1("Player 1",true, 50,0,50,150),
-p2("Player2",false,900,0,50,150);
-*/
 
 static player me;
 static player opponent;
+static moving_circle<int> ball;
 static bool running = true;
 
 void keyboardHandler(unsigned char key, int x, int y)
@@ -19,18 +15,17 @@ void keyboardHandler(unsigned char key, int x, int y)
     {
         case 'W':
         case 'w':
-            me += {0,DeltaY};
+            me.body.updatePos(me.body.location.getX(), me.body.location.getY() + DeltaY);
             break;
 
         case 'S':
         case 's':
-            me -= {0, DeltaY};
+            me.body.updatePos(me.body.location.getX(), me.body.location.getY() - DeltaY);
             break;
 
         case 27: // "27" is the Escape key
             exit(1);
     }
-    glutPostRedisplay();
 }
 
 //drawScene() handles the animation and the redrawing of the graphics window contents.
@@ -41,12 +36,20 @@ void drawScene(void)
     glColor3f(255,255,255);
 
     //Draw me
-    glRecti(me.getX(), me.getY(), me.getX()+me.getWidth(), me.getY()+me.getHeight());
+    glRecti(
+        me.body.location.getX(), 
+        me.body.location.getY(), 
+        me.body.location.getX()+me.body.getWidth(),
+        me.body.location.getY()+me.body.getHeight());
     //Draw my name?
     //TODO: Add text library
 
     //Draw opponent
-    glRecti(opponent.getX(), opponent.getY(), opponent.getX()+opponent.getWidth(), opponent.getY()+opponent.getHeight());
+    glRecti(
+        opponent.body.location.getX(),
+        opponent.body.location.getY(),
+        opponent.body.location.getX()+opponent.body.getWidth(),
+        opponent.body.location.getY()+opponent.body.getHeight());
 
     // Flush the pipeline.  (Not usually necessary.)
     glFlush();

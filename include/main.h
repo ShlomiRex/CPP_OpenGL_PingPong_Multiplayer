@@ -12,5 +12,3 @@
 // These variables set the dimensions of the rectanglar region we wish to view.
 const double Xmin = 0, Xmax = 1024;
 const double Ymin = 0, Ymax = 256;
-
-#define DeltaY 32

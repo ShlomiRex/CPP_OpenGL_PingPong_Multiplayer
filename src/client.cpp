@@ -51,10 +51,10 @@ try_login:
 		cout << "Am I left? Answer: " << lcp->isLeft << endl;
 		me->isLeft = lcp->isLeft;
 		me->id = lcp->player_id;
-		me->height = lcp->starting_height;
-		me->width = lcp->starting_width;
-		me->pos_x = lcp->starting_pos_x;
-		me->pos_y = lcp->starting_pos_y;
+		me->body.updatePos(lcp->starting_pos_x, lcp->starting_pos_y);
+		me->body.updateWidth(lcp->starting_width);
+		me->body.updateHeight(lcp->starting_height);
+
 
 		//Opponent isLeft is opposite of me isLeft
 		opponent->isLeft = (me->isLeft == true ? false : true);
@@ -68,10 +68,9 @@ try_start_game:
 			goto try_start_game;
 		}
 		game_starts_packet* gsp = (game_starts_packet*)buf;
-		opponent->width = gsp->starting_width;
-		opponent->height = gsp->starting_height;
-		opponent->pos_x = gsp->starting_pos_x;
-		opponent->pos_y = gsp->starting_pos_y;
+		opponent->body.updateWidth(gsp->starting_width);
+		opponent->body.updateHeight(gsp->starting_height);
+		opponent->body.updatePos(gsp->starting_pos_x, gsp->starting_pos_y);
 		//fisnished initializing clients players. Game starts!
 		cout << "Let the games begin!" << endl;
 	}
@@ -80,15 +79,15 @@ try_start_game:
 }
 
 void sendto_network_loop(bool* running, player* me) {
-	player_pos_packet ppp{me->pos_x, me->pos_y};
+	player_pos_packet ppp{me->body.location.getX(), me->body.location.getY()};
 	void* buff = malloc(BUFF_MAX_LEN);
 	while(running) {
 		//Send my location
-		cout << ">Sending my location" << endl;
+		//cout << ">Sending my location" << endl;
 		send_packet(sock, &ppp, sizeof(player_pos_packet), server);
 		
-		usleep(500000);
-		ppp.update(me->pos_x, me->pos_y);
+		//usleep(10);
+		ppp.update(me->body.location.getX(), me->body.location.getY());
 	}
 	free(buff);
 }
@@ -100,8 +99,8 @@ void recvfrom_network_loop(bool* running, player* opponent) {
 		//Receive location
 		receive_packet(sock, buff, BUFF_MAX_LEN, server);
 		ppp_response = (player_pos_packet*)buff;
-		opponent->updatePos(ppp_response->x, ppp_response->y);
-		cout << ">Received opponent location" << endl;
+		opponent->body.updatePos(ppp_response->x, ppp_response->y);
+		//cout << ">Received opponent location" << endl;
 	}
 	free(buff);
 }
