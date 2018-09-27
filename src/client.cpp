@@ -7,7 +7,9 @@ int sock;
 
 struct sockaddr_in server;
 
-void start_client(string ip, player* me, player* opponent) {
+
+
+void start_client(string ip, player* me, player* opponent, moving_circle<int>* ball) {
 	if(me == nullptr || opponent == nullptr) {
 		cerr << "me or opponent is nullptr" << endl;
 		exit(1);
@@ -40,7 +42,7 @@ try_login:
 	send_packet(sock, &lp, sizeof(lp),server); 
 	cout << "> Sent." << endl;
 
-	
+	cout << "Receiving confirmation..." << endl;
 	receive_packet(sock, buf, BUFF_MAX_LEN, server);
 	bp = (basic_packet*)buf;
 	if(bp->proto != LOGIN_CONFIRM) {
@@ -48,29 +50,37 @@ try_login:
 		goto try_login;
 	} else {
 		lcp = (login_confirm_packet*)buf;
-		cout << "Am I left? Answer: " << lcp->isLeft << endl;
+		if(lcp->isLeft == 1)
+			cout << "I am left rectangle." << endl;
+		else
+			cout << "I am right rectangle." << endl;
 		me->isLeft = lcp->isLeft;
 		me->id = lcp->player_id;
-		me->body.updatePos(lcp->starting_pos_x, lcp->starting_pos_y);
-		me->body.updateWidth(lcp->starting_width);
-		me->body.updateHeight(lcp->starting_height);
+		
+		me->body.updatePos(lcp->starting_rectangle.location.getX(),
+							lcp->starting_rectangle.location.getY());
+		me->body.updateWidth(lcp->starting_rectangle.getWidth());
+		me->body.updateHeight(lcp->starting_rectangle.getHeight());
 
 
 		//Opponent isLeft is opposite of me isLeft
 		opponent->isLeft = (me->isLeft == true ? false : true);
-
+		cout << "Login successful" << endl;
 try_start_game:
 		//Now wait for server reply for starting the game...
 		receive_packet(sock, buf, BUFF_MAX_LEN, server);
 		bp = (basic_packet*)buf;
 		if(bp->proto != GAME_STARTS) {
-			cerr << "Did not received game starts packet! Trying again." << endl;
+			cerr << "Did not received game starts packet! Trying again. PROTO: " << proto::getProtoName(bp->proto) << endl;
 			goto try_start_game;
 		}
 		game_starts_packet* gsp = (game_starts_packet*)buf;
-		opponent->body.updateWidth(gsp->starting_width);
-		opponent->body.updateHeight(gsp->starting_height);
-		opponent->body.updatePos(gsp->starting_pos_x, gsp->starting_pos_y);
+		opponent->body.updateWidth(gsp->starting_rectangle.getWidth());
+		opponent->body.updateHeight(gsp->starting_rectangle.getHeight());
+		opponent->body.updatePos(gsp->starting_rectangle.location.getX(), gsp->starting_rectangle.location.getY());
+
+		ball->update(&gsp->ball);
+
 		//fisnished initializing clients players. Game starts!
 		cout << "Let the games begin!" << endl;
 	}
@@ -86,7 +96,7 @@ void sendto_network_loop(bool* running, player* me) {
 		//cout << ">Sending my location" << endl;
 		send_packet(sock, &ppp, sizeof(player_pos_packet), server);
 		
-		//usleep(10);
+		usleep(10);
 		ppp.update(me->body.location.getX(), me->body.location.getY());
 	}
 	free(buff);

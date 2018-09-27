@@ -1,8 +1,16 @@
 #pragma once
+
+#include "defaults.h"
+
 #include <stdlib.h>
 #include <iostream>
 using namespace std;
 #define PRIMITIVE_T
+
+//For checking collisions
+enum rectangle_collision_borders {
+    NONE, LEFT, RIGHT, TOP, BOTTOM
+};
 
 template<typename PRIMITIVE_T T>
 struct point {
@@ -100,7 +108,6 @@ struct rectangle {
     }
 };
 
-
 template<typename PRIMITIVE_T T>
 struct moving_circle {
 private:
@@ -110,13 +117,25 @@ private:
 
 public:
     moving_circle() {
-
+        center_pos = point<T>(DEFAULT_BALL_STARTING_POS_X, DEFAULT_BALL_STARTING_POS_Y);
+        acc = acceleration<T>(DEFAULT_BALL_ACC_X, DEFAULT_BALL_ACC_Y);
+        radius = DEFAULT_BALL_RADIUS;
     }
-    moving_circle(point<T> center_pos, size_t radius) : center_pos(center_pos), radius(radius) {
-        
+
+    void update(moving_circle* other) {
+        this->center_pos = other->center_pos;
+        this->acc = other->acc;
+        this->radius = other->radius;
     }
 
-    ostream& operator<<(ostream& o) {
-        return o << center_pos << "," << radius;
+    point<T> getCenter() {
+        return center_pos;
+    }
+
+    size_t getRadius() {
+        return radius;
     }
 };
+
+
+rectangle_collision_borders checkCollision(moving_circle<int>* ball, rectangle<int>* rec, bool isLeftRect);

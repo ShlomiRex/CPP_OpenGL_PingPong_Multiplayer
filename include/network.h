@@ -2,6 +2,7 @@
 
 //My libs
 #include "player.h"
+#include "defaults.h"
 
 //STL
 #include <sys/socket.h>
@@ -11,6 +12,8 @@
 #include <string.h>
 #include <iostream>
 #include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 #define SERVER_PORT 8888
 #define BUFF_MAX_LEN 512 //in bytes
@@ -45,12 +48,37 @@ namespace proto {
     struct login_confirm_packet : public basic_packet {
         bool isLeft;
         unsigned int player_id;
-        int starting_pos_x, starting_pos_y;
-        size_t starting_width, starting_height;
-        login_confirm_packet(bool isLeft, unsigned int player_id, int starting_pos_x, int starting_pos_y, size_t starting_width, size_t starting_height) 
-            :  basic_packet(LOGIN_CONFIRM), isLeft(isLeft), player_id(player_id),
-               starting_pos_x(starting_pos_x), starting_pos_y(starting_pos_y),
-               starting_width(starting_width), starting_height(starting_height) {}
+
+        rectangle<int> starting_rectangle;
+
+        login_confirm_packet(bool isLeft, unsigned int player_id, rectangle<int> starting_rectangle) 
+            :  basic_packet(LOGIN_CONFIRM), isLeft(isLeft), player_id(player_id), starting_rectangle(starting_rectangle) {}
+
+        //Contains left player defaults
+        static login_confirm_packet getPlayerLeftDefaultPacket(unsigned int player_id) {
+            return {
+                true, 
+                player_id, 
+			    rectangle<int>(
+				    point<int>(DEFAULT_PLAYER_LEFT_STARTING_X, DEFAULT_PLAYER_LEFT_STARTING_Y),
+                    DEFAULT_PLAYER_STARTING_WIDTH,
+				    DEFAULT_PLAYER_STARTING_HEIGHT
+                )
+            };
+        }
+
+        //Contains right player defaults
+        static login_confirm_packet getPlayerRightDefaultPacket(unsigned int player_id) {
+            return {
+                false, 
+                player_id, 
+			    rectangle<int>(
+				    point<int>(DEFAULT_PLAYER_RIGHT_STARTING_X, DEFAULT_PLAYER_RIGHT_STARTING_Y),
+                    DEFAULT_PLAYER_STARTING_WIDTH,
+				    DEFAULT_PLAYER_STARTING_HEIGHT
+                )
+            };
+        }
     };
 
     struct player_pos_packet : public basic_packet {
@@ -65,17 +93,44 @@ namespace proto {
     //Meanning: Left player recevies right player stats
     //Right player receives left player stats
     struct game_starts_packet : public basic_packet {
-        int starting_pos_x, starting_pos_y;
-        size_t starting_width, starting_height;
-        game_starts_packet(int starting_pos_x, int starting_pos_y, size_t starting_width, size_t starting_height) 
-            : basic_packet(GAME_STARTS), starting_pos_x(starting_pos_x), starting_pos_y(starting_pos_y),
-              starting_width(starting_width), starting_height(starting_height) {}
+        rectangle<int> starting_rectangle;
+        moving_circle<int> ball;
+        game_starts_packet(rectangle<int> starting_rectangle, moving_circle<int> ball) : basic_packet(GAME_STARTS), starting_rectangle(starting_rectangle), ball(ball) {
+
+        }
+
+        //Contains default right player location
+        static game_starts_packet getPlayerRightDefaultPacket() {
+            return {
+                rectangle<int>(point<int>(DEFAULT_PLAYER_RIGHT_STARTING_X, DEFAULT_PLAYER_RIGHT_STARTING_Y) 
+                , DEFAULT_PLAYER_STARTING_WIDTH
+		        , DEFAULT_PLAYER_STARTING_HEIGHT)
+		        , moving_circle<int>()
+	        };
+        }
+
+        //Contains default left player location
+        static game_starts_packet getPlayerLeftDefaultPacket() {
+            return {
+                rectangle<int>(point<int>(DEFAULT_PLAYER_LEFT_STARTING_X, DEFAULT_PLAYER_LEFT_STARTING_Y) 
+                , DEFAULT_PLAYER_STARTING_WIDTH
+		        , DEFAULT_PLAYER_STARTING_HEIGHT)
+		        , moving_circle<int>()
+	        };
+        }
     };
 
     struct test_packet : public basic_packet{
         char c;
         int i;
         test_packet() : basic_packet(TEST), c('S'), i(666) {}
+    };
+
+    struct ball_packet {
+        moving_circle<int> ball;
+        ball_packet(moving_circle<int> ball) {
+            this->ball = ball;
+        }
     };
     const char* getProtoName(const proto_t& p);
 }

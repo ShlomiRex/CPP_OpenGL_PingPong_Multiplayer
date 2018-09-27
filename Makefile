@@ -19,6 +19,9 @@ DIRS := src bin doc include test build logs include/lib #The project structure i
 SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
 OBJECTS = $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SOURCES))
 
+all: link
+	
+
 #Run
 run: link
 	./$(BIN_DIR)/main.out

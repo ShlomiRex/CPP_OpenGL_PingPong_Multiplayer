@@ -22,7 +22,7 @@ void server_start(string* ip) {
 
 
 	void* buff = malloc(BUFF_MAX_LEN);
-	unsigned int player_id = 66;
+	unsigned int player_id = 0;
 	basic_packet* bp;
 	login_packet* lp;
 	
@@ -38,7 +38,8 @@ try_login1:
 	} else {
 		lp = (login_packet*)buff;
 		cout << "Player 1 name: " << lp->name << endl;
-		login_confirm_packet lcp = login_confirm_packet{true, player_id++, DEFAULT_LEFT_STARTING_X, DEFAULT_LEFT_STARTING_Y, DEFAULT_STARTING_WIDTH, DEFAULT_STARTING_HEIGHT}; 
+		login_confirm_packet lcp = login_confirm_packet::getPlayerLeftDefaultPacket(player_id++);
+		cout << "> Sending login confirmation..." << endl;
 		send_packet(sock, &lcp, sizeof(login_confirm_packet), client1);
 	}
 
@@ -53,23 +54,16 @@ try_login2:
 	} else {
 		lp = (login_packet*)buff;
 		cout << "Player 2 name: " << lp->name << endl;
-		login_confirm_packet lcp = login_confirm_packet{false, player_id++, DEFAULT_RIGHT_STARTING_X, DEFAULT_RIGHT_STARTING_Y, DEFAULT_STARTING_WIDTH, DEFAULT_STARTING_HEIGHT}; 
+		login_confirm_packet lcp = login_confirm_packet::getPlayerRightDefaultPacket(player_id++);
+		cout << "> Sending login confirmation..." << endl;
 		send_packet(sock, &lcp, sizeof(login_confirm_packet), client2);
 	}
 
-	game_starts_packet gsp_to_left{
-		DEFAULT_RIGHT_STARTING_X,
-		DEFAULT_RIGHT_STARTING_Y,
-		DEFAULT_STARTING_WIDTH,
-		DEFAULT_STARTING_HEIGHT
-	};
-	
-	game_starts_packet gsp_to_right{
-		DEFAULT_LEFT_STARTING_X,
-		DEFAULT_LEFT_STARTING_Y,
-		DEFAULT_STARTING_WIDTH,
-		DEFAULT_STARTING_HEIGHT
-	};
+	//Initialize ball update thread
+	thread ball_thread = thread(ball_thread_function);
+
+	game_starts_packet gsp_to_left = game_starts_packet::getPlayerRightDefaultPacket();
+	game_starts_packet gsp_to_right = game_starts_packet::getPlayerLeftDefaultPacket();
 
 	send_packet(sock, &gsp_to_left, sizeof(game_starts_packet), client1); //Client 1 is left
 	send_packet(sock, &gsp_to_right, sizeof(game_starts_packet), client2); //Client 2 is right
@@ -108,4 +102,8 @@ try_login2:
 		}
 	}
 	free(buff);
+}
+
+void ball_thread_function() {
+	
 }

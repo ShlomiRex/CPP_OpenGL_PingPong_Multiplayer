@@ -28,6 +28,61 @@ void keyboardHandler(unsigned char key, int x, int y)
     }
 }
 
+namespace drawing {
+    /*
+    * Function that handles the drawing of a circle using the triangle fan
+    * method. This will create a filled circle.
+    *
+    * Params:
+    *	x (GLFloat) - the x position of the center point of the circle
+    *	y (GLFloat) - the y position of the center point of the circle
+    *	radius (GLFloat) - the radius that the painted circle will have
+    */
+    void drawFilledCircle(GLfloat x, GLfloat y, GLfloat radius){
+        int i;
+        int triangleAmount = 20; //# of triangles used to draw circle
+        
+        //GLfloat radius = 0.8f; //radius
+        GLfloat twicePi = 2.0f * M_PI;
+        
+        glBegin(GL_TRIANGLE_FAN);
+            glVertex2f(x, y); // center of circle
+            for(i = 0; i <= triangleAmount;i++) { 
+                glVertex2f(
+                        x + (radius * cos(i *  twicePi / triangleAmount)), 
+                    y + (radius * sin(i * twicePi / triangleAmount))
+                );
+            }
+        glEnd();
+    }
+
+    /*
+    * Function that handles the drawing of a circle using the line loop
+    * method. This will create a hollow circle.
+    *
+    * Params:
+    *	x (GLFloat) - the x position of the center point of the circle
+    *	y (GLFloat) - the y position of the center point of the circle
+    *	radius (GLFloat) - the radius that the painted circle will have
+    */
+    void drawHollowCircle(GLfloat x, GLfloat y, GLfloat radius){
+        int i;
+        int lineAmount = 100; //# of triangles used to draw circle
+        
+        //GLfloat radius = 0.8f; //radius
+        GLfloat twicePi = 2.0f * M_PI;
+        
+        glBegin(GL_LINE_LOOP);
+            for(i = 0; i <= lineAmount;i++) { 
+                glVertex2f(
+                    x + (radius * cos(i *  twicePi / lineAmount)), 
+                    y + (radius* sin(i * twicePi / lineAmount))
+                );
+            }
+        glEnd();
+    }
+};
+
 //drawScene() handles the animation and the redrawing of the graphics window contents.
 void drawScene(void)
 {
@@ -50,6 +105,9 @@ void drawScene(void)
         opponent.body.location.getY(),
         opponent.body.location.getX()+opponent.body.getWidth(),
         opponent.body.location.getY()+opponent.body.getHeight());
+
+    //Draw ball
+    drawing::drawFilledCircle(me.body.location.getX(),me.body.location.getY(),30);
 
     // Flush the pipeline.  (Not usually necessary.)
     glFlush();
@@ -116,7 +174,6 @@ void resizeWindow(int w, int h)
 int main(int argc, char **argv)
 {
     ////////////////////////////// User Input and Networking //////////////////////////////
-
     cout << "Do you want to join(j) or create(c) a game?" << endl;
     char choice = getchar();
     if(choice != 'c' && choice != 'j') {
@@ -134,7 +191,7 @@ int main(int argc, char **argv)
         server_ip = tmp;
     if(choice == 'j') {
         cout << "Joining a game..." << endl;
-        start_client(server_ip, &me, &opponent);
+        start_client(server_ip, &me, &opponent, &ball);
         
         client_network_thread_sendto = thread(sendto_network_loop, &running, &me);
         client_network_thread_recvfrom = thread(recvfrom_network_loop, &running, &opponent);
@@ -179,5 +236,7 @@ int main(int argc, char **argv)
     glutMainLoop();
 
 finish:
-    return (0); // This line is never reached by client, but by server yes.
+	//Test visual studio
+	//Test 2
+	return (0);// This line is never reached by client, but by server yes.
 }
