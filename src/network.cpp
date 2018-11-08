@@ -24,6 +24,8 @@ namespace proto {
                 return "FIN";
             case PLAYER_POS:
                 return "PLAYER_POS";
+            case BALL:
+                return "BALL";
             case TEST:
                 return "TEST";
             case NO_PROTO:

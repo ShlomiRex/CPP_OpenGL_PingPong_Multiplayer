@@ -1,6 +1,6 @@
 #pragma once
 #include "network.h"
-void start_client(std::string ip, player* me, player* opponent, moving_circle<int>* ball);
+void start_client(std::string ip, player* me, player* opponent, moving_circle* ball);
 
 
 

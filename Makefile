@@ -54,13 +54,13 @@ test1:
 	$(CXX) $(CXXFLAGS) $(DBGFLAG) -c "$(TEST_DIR)/test1/client.cpp" -o "$(BIN_DIR)/test1_client.out"
 	$(CXX) $(CXXFLAGS) $(DBGFLAG) -c "$(TEST_DIR)/test1/server.cpp" -o "$(BIN_DIR)/test1_server.out"
 
-create_server: link
+server: link
 	./$(BIN_DIR)/main.out < $(TEST_DIR)/create_server_input.txt
 
-create_client1: link
+client1: link
 	./$(BIN_DIR)/main.out < $(TEST_DIR)/create_client_input.txt
 
-create_client2: link
+client2: link
 	./$(BIN_DIR)/main.out < $(TEST_DIR)/create_client_input2.txt
 
 test_server_connection:

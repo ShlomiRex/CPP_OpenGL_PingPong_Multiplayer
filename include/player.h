@@ -14,12 +14,12 @@ struct player {
     
     char name[PLAYER_NAME_MAX_LENGTH];
     bool isLeft; //Is left board? (on GUI)
-    rectangle<int> body;
+    rectangle body;
     unsigned int id;
     
     player() {}
     player(char name[PLAYER_NAME_MAX_LENGTH], int x, int y, size_t width, size_t height, bool isLeft, unsigned int id) 
-    : isLeft(isLeft), body(point<int>(x,y),width, height)
+    : isLeft(isLeft), body(point(x,y),width, height)
     {
         setName(name);
     }

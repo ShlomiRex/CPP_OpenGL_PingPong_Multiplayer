@@ -25,7 +25,7 @@
 
 namespace proto {
     typedef enum proto_t {
-        NO_PROTO, LOGIN, LOGIN_CONFIRM, LOGIN_NOT_CONFIRM, GAME_STARTS, FIN, PLAYER_POS, TEST
+        NO_PROTO, LOGIN, LOGIN_CONFIRM, LOGIN_NOT_CONFIRM, GAME_STARTS, FIN, PLAYER_POS, TEST, BALL
     } proto_t;
 
     //All packets must inherit this struct
@@ -49,9 +49,9 @@ namespace proto {
         bool isLeft;
         unsigned int player_id;
 
-        rectangle<int> starting_rectangle;
+        rectangle starting_rectangle;
 
-        login_confirm_packet(bool isLeft, unsigned int player_id, rectangle<int> starting_rectangle) 
+        login_confirm_packet(bool isLeft, unsigned int player_id, rectangle starting_rectangle) 
             :  basic_packet(LOGIN_CONFIRM), isLeft(isLeft), player_id(player_id), starting_rectangle(starting_rectangle) {}
 
         //Contains left player defaults
@@ -59,8 +59,8 @@ namespace proto {
             return {
                 true, 
                 player_id, 
-			    rectangle<int>(
-				    point<int>(DEFAULT_PLAYER_LEFT_STARTING_X, DEFAULT_PLAYER_LEFT_STARTING_Y),
+			    rectangle(
+				    point(DEFAULT_PLAYER_LEFT_STARTING_X, DEFAULT_PLAYER_LEFT_STARTING_Y),
                     DEFAULT_PLAYER_STARTING_WIDTH,
 				    DEFAULT_PLAYER_STARTING_HEIGHT
                 )
@@ -72,8 +72,8 @@ namespace proto {
             return {
                 false, 
                 player_id, 
-			    rectangle<int>(
-				    point<int>(DEFAULT_PLAYER_RIGHT_STARTING_X, DEFAULT_PLAYER_RIGHT_STARTING_Y),
+			    rectangle(
+				    point(DEFAULT_PLAYER_RIGHT_STARTING_X, DEFAULT_PLAYER_RIGHT_STARTING_Y),
                     DEFAULT_PLAYER_STARTING_WIDTH,
 				    DEFAULT_PLAYER_STARTING_HEIGHT
                 )
@@ -83,8 +83,8 @@ namespace proto {
 
     struct player_pos_packet : public basic_packet {
         int x, y;
-        player_pos_packet(int x, int y) : basic_packet(PLAYER_POS), x(x), y(y) {}
-        void update(int new_x, int new_y) {
+        player_pos_packet(double x, double y) : basic_packet(PLAYER_POS), x(x), y(y) {}
+        void update(double new_x, double new_y) {
             x = new_x;
             y = new_y;
         }
@@ -93,29 +93,29 @@ namespace proto {
     //Meanning: Left player recevies right player stats
     //Right player receives left player stats
     struct game_starts_packet : public basic_packet {
-        rectangle<int> starting_rectangle;
-        moving_circle<int> ball;
-        game_starts_packet(rectangle<int> starting_rectangle, moving_circle<int> ball) : basic_packet(GAME_STARTS), starting_rectangle(starting_rectangle), ball(ball) {
+        rectangle starting_rectangle;
+        moving_circle ball;
+        game_starts_packet(rectangle starting_rectangle, moving_circle ball) : basic_packet(GAME_STARTS), starting_rectangle(starting_rectangle), ball(ball) {
 
         }
 
         //Contains default right player location
         static game_starts_packet getPlayerRightDefaultPacket() {
             return {
-                rectangle<int>(point<int>(DEFAULT_PLAYER_RIGHT_STARTING_X, DEFAULT_PLAYER_RIGHT_STARTING_Y) 
+                rectangle(point(DEFAULT_PLAYER_RIGHT_STARTING_X, DEFAULT_PLAYER_RIGHT_STARTING_Y) 
                 , DEFAULT_PLAYER_STARTING_WIDTH
 		        , DEFAULT_PLAYER_STARTING_HEIGHT)
-		        , moving_circle<int>()
+		        , moving_circle()
 	        };
         }
 
         //Contains default left player location
         static game_starts_packet getPlayerLeftDefaultPacket() {
             return {
-                rectangle<int>(point<int>(DEFAULT_PLAYER_LEFT_STARTING_X, DEFAULT_PLAYER_LEFT_STARTING_Y) 
+                rectangle(point(DEFAULT_PLAYER_LEFT_STARTING_X, DEFAULT_PLAYER_LEFT_STARTING_Y) 
                 , DEFAULT_PLAYER_STARTING_WIDTH
 		        , DEFAULT_PLAYER_STARTING_HEIGHT)
-		        , moving_circle<int>()
+		        , moving_circle()
 	        };
         }
     };
@@ -126,10 +126,13 @@ namespace proto {
         test_packet() : basic_packet(TEST), c('S'), i(666) {}
     };
 
-    struct ball_packet {
-        moving_circle<int> ball;
-        ball_packet(moving_circle<int> ball) {
+    struct ball_packet : public basic_packet {
+        moving_circle ball;
+        ball_packet(moving_circle ball) : basic_packet(proto::BALL) {
             this->ball = ball;
+        }
+        void update(moving_circle* ball) {
+            this->ball = *ball;
         }
     };
     const char* getProtoName(const proto_t& p);

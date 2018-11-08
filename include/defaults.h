@@ -32,5 +32,5 @@ const double Ymin = 0, Ymax = 256;
 //Delta of moving players
 #define DeltaY 32
 
-#define DEFAULT_BALL_ACC_X 10
-#define DEFAULT_BALL_ACC_Y 10
+#define DEFAULT_BALL_ACC_DX 10
+#define DEFAULT_BALL_ACC_DY 10

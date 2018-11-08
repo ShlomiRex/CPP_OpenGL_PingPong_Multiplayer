@@ -1,1 +1,7 @@
 This is a pong multiplayer game written in C++ by Shlomi using OpenGL for rendering
+
+To start developing, type:
+$ make create_directories
+
+Libraries:
+$ sudo apt-get install freeglut3-dev

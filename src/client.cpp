@@ -9,7 +9,7 @@ struct sockaddr_in server;
 
 
 
-void start_client(string ip, player* me, player* opponent, moving_circle<int>* ball) {
+void start_client(string ip, player* me, player* opponent, moving_circle* ball) {
 	if(me == nullptr || opponent == nullptr) {
 		cerr << "me or opponent is nullptr" << endl;
 		exit(1);
@@ -79,10 +79,11 @@ try_start_game:
 		opponent->body.updateHeight(gsp->starting_rectangle.getHeight());
 		opponent->body.updatePos(gsp->starting_rectangle.location.getX(), gsp->starting_rectangle.location.getY());
 
-		ball->update(&gsp->ball);
+		ball->update(&gsp->ball); //initialize ball properties
 
 		//fisnished initializing clients players. Game starts!
 		cout << "Let the games begin!" << endl;
+		cout << "init ball: " << *ball << endl;
 	}
 
 	free(buf);
@@ -103,14 +104,27 @@ void sendto_network_loop(bool* running, player* me) {
 }
 
 void recvfrom_network_loop(bool* running, player* opponent) {
+	basic_packet* bp;
 	player_pos_packet* ppp_response;
+	ball_packet* ballp;
 	void* buff = malloc(BUFF_MAX_LEN);
 	while(running) {
 		//Receive location
 		receive_packet(sock, buff, BUFF_MAX_LEN, server);
-		ppp_response = (player_pos_packet*)buff;
-		opponent->body.updatePos(ppp_response->x, ppp_response->y);
-		//cout << ">Received opponent location" << endl;
+		bp = (basic_packet*) buff;
+		if(bp->proto == proto::BALL) {
+			ballp = (ball_packet*) buff;
+			cout << "Received proto ball: " << ballp->ball << endl;
+
+		} else if(bp->proto == proto::PLAYER_POS) {
+			ppp_response = (player_pos_packet*)buff;
+			opponent->body.updatePos(ppp_response->x, ppp_response->y);
+			//cout << ">Received opponent location" << endl;
+		} else {
+			//cout << "Unknown proto: " << getProtoName(bp->proto) << endl;
+
+		}
+		
 	}
 	free(buff);
 }

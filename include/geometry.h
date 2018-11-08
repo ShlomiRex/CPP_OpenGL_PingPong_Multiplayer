@@ -7,87 +7,45 @@
 using namespace std;
 #define PRIMITIVE_T
 
-//For checking collisions
-enum rectangle_collision_borders {
-    NONE, LEFT, RIGHT, TOP, BOTTOM
-};
-
-template<typename PRIMITIVE_T T>
 struct point {
     protected:
-    T x,y;
+    double x,y;
     public:
-    point(T x = 0, T y = 0) : x(x),y(y) {
+    point(double x = 0, double y = 0) : x(x),y(y) {
         
     }
-    T getX() const {
+    double getX() const {
         return x;
     }
 
-    T getY() const {
+    double getY() const {
         return y;
     }
 
-    void updatePos(T new_x, T new_y) {
+    void updatePos(double new_x, double new_y) {
         x = new_x;
         y = new_y;
     }
 
-    ostream& operator<<(ostream& o) {
-        o << "(" << x << "," << y << ")";
+    friend ostream& operator<<(ostream& o, point& p) {
+        o << "(" << p.x << "," << p.y << ")";
         return o;
     }
 };
 
-template<typename PRIMITIVE_T T>
-struct acceleration : protected point<T>{
-    public:
-    acceleration() {
-        
-    }
-    acceleration(T dx, T dy) {
-        setDx(dx);
-        setDy(dy);
-    }
-    T getDx() {
-        return this->x;
-    }
-
-    T getDy() {
-        return this->y;
-    }
-
-    void setDx(T dx) {
-        this->x = dx;
-    }
-
-    void setDy(T dy) {
-        this->y = dy;
-    }
-
-    void updateAcc(T dx, T dy) {
-        setDx(dx);
-        setDy(dy);
-    }
-};
-
-
-
-
-template<typename PRIMITIVE_T T>
 struct rectangle {
-    private:
+private:
     size_t width;
     size_t height;
-    public:
-    point<T> location;
+public:
+    point location;
 
     rectangle() : width(0), height(0) {}
-    rectangle(point<T> location, size_t width, size_t height) : width(width),height(height),location(location) {
+    rectangle(point location, size_t width, size_t height) : width(width),height(height),location(location) {
 
     }
 
-    void updatePos(T new_x, T new_y) {
+    void updatePos(double new_x, double new_y) {
         location.updatePos(new_x, new_y);
     }
 
@@ -102,23 +60,23 @@ struct rectangle {
     size_t getWidth() { return width; }
     size_t getHeight() { return height; }
 
-    ostream& operator<<(ostream& o) {
-        o << "( " << location << " , " << width << " . " << height << " )";
+
+    friend ostream& operator<<(ostream& o, rectangle& rec) {
+        o << "( " << rec.location << " , " << rec.width << " . " << rec.height << " )";
         return o;
     }
 };
 
-template<typename PRIMITIVE_T T>
 struct moving_circle {
 private:
-    acceleration<T> acc;
-    point<T> center_pos; //Center pos
+    point acc;
+    point center_pos; //Center pos
     size_t radius;
 
 public:
     moving_circle() {
-        center_pos = point<T>(DEFAULT_BALL_STARTING_POS_X, DEFAULT_BALL_STARTING_POS_Y);
-        acc = acceleration<T>(DEFAULT_BALL_ACC_X, DEFAULT_BALL_ACC_Y);
+        center_pos = point(DEFAULT_BALL_STARTING_POS_X, DEFAULT_BALL_STARTING_POS_Y);
+        acc = point(DEFAULT_BALL_ACC_DX, DEFAULT_BALL_ACC_DY);
         radius = DEFAULT_BALL_RADIUS;
     }
 
@@ -128,14 +86,33 @@ public:
         this->radius = other->radius;
     }
 
-    point<T> getCenter() {
+    point getCenter() {
         return center_pos;
     }
 
     size_t getRadius() {
         return radius;
     }
+
+    point* getAcceleration() {
+        return &acc;
+    }
+
+    void setAcceleration(double dx, double dy) {
+        acc.updatePos(dx, dy);
+    }
+
+    void setCenter(point center) {
+        this->center_pos = center;
+    }
+
+    void setRadius(size_t rad) {
+        this->radius = rad;
+    }
+
+    friend ostream& operator<<(ostream& o, moving_circle& mc) {
+        o << "(acc: " << mc.acc << ",center_pos: " << mc.center_pos << ",radius: " << mc.radius << ")";
+        return o;
+    }
 };
 
-
-rectangle_collision_borders checkCollision(moving_circle<int>* ball, rectangle<int>* rec, bool isLeftRect);

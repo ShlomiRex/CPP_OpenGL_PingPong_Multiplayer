@@ -6,30 +6,31 @@ static thread client_network_thread_recvfrom;
 
 static player me;
 static player opponent;
-static moving_circle<int> ball;
+static moving_circle ball;
 static bool running = true;
 
 void keyboardHandler(unsigned char key, int x, int y)
 {
     switch (key)
     {
-        case 'W':
-        case 'w':
-            me.body.updatePos(me.body.location.getX(), me.body.location.getY() + DeltaY);
-            break;
+    case 'W':
+    case 'w':
+        me.body.updatePos(me.body.location.getX(), me.body.location.getY() + DeltaY);
+        break;
 
-        case 'S':
-        case 's':
-            me.body.updatePos(me.body.location.getX(), me.body.location.getY() - DeltaY);
-            break;
+    case 'S':
+    case 's':
+        me.body.updatePos(me.body.location.getX(), me.body.location.getY() - DeltaY);
+        break;
 
-        case 27: // "27" is the Escape key
-            exit(1);
+    case 27: // "27" is the Escape key
+        exit(1);
     }
 }
 
-namespace drawing {
-    /*
+namespace drawing
+{
+/*
     * Function that handles the drawing of a circle using the triangle fan
     * method. This will create a filled circle.
     *
@@ -38,25 +39,26 @@ namespace drawing {
     *	y (GLFloat) - the y position of the center point of the circle
     *	radius (GLFloat) - the radius that the painted circle will have
     */
-    void drawFilledCircle(GLfloat x, GLfloat y, GLfloat radius){
-        int i;
-        int triangleAmount = 20; //# of triangles used to draw circle
-        
-        //GLfloat radius = 0.8f; //radius
-        GLfloat twicePi = 2.0f * M_PI;
-        
-        glBegin(GL_TRIANGLE_FAN);
-            glVertex2f(x, y); // center of circle
-            for(i = 0; i <= triangleAmount;i++) { 
-                glVertex2f(
-                        x + (radius * cos(i *  twicePi / triangleAmount)), 
-                    y + (radius * sin(i * twicePi / triangleAmount))
-                );
-            }
-        glEnd();
-    }
+void drawFilledCircle(GLfloat x, GLfloat y, GLfloat radius)
+{
+    int i;
+    int triangleAmount = 20; //# of triangles used to draw circle
 
-    /*
+    //GLfloat radius = 0.8f; //radius
+    GLfloat twicePi = 2.0f * M_PI;
+
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2f(x, y); // center of circle
+    for (i = 0; i <= triangleAmount; i++)
+    {
+        glVertex2f(
+            x + (radius * cos(i * twicePi / triangleAmount)),
+            y + (radius * sin(i * twicePi / triangleAmount)));
+    }
+    glEnd();
+}
+
+/*
     * Function that handles the drawing of a circle using the line loop
     * method. This will create a hollow circle.
     *
@@ -65,37 +67,38 @@ namespace drawing {
     *	y (GLFloat) - the y position of the center point of the circle
     *	radius (GLFloat) - the radius that the painted circle will have
     */
-    void drawHollowCircle(GLfloat x, GLfloat y, GLfloat radius){
-        int i;
-        int lineAmount = 100; //# of triangles used to draw circle
-        
-        //GLfloat radius = 0.8f; //radius
-        GLfloat twicePi = 2.0f * M_PI;
-        
-        glBegin(GL_LINE_LOOP);
-            for(i = 0; i <= lineAmount;i++) { 
-                glVertex2f(
-                    x + (radius * cos(i *  twicePi / lineAmount)), 
-                    y + (radius* sin(i * twicePi / lineAmount))
-                );
-            }
-        glEnd();
+void drawHollowCircle(GLfloat x, GLfloat y, GLfloat radius)
+{
+    int i;
+    int lineAmount = 100; //# of triangles used to draw circle
+
+    //GLfloat radius = 0.8f; //radius
+    GLfloat twicePi = 2.0f * M_PI;
+
+    glBegin(GL_LINE_LOOP);
+    for (i = 0; i <= lineAmount; i++)
+    {
+        glVertex2f(
+            x + (radius * cos(i * twicePi / lineAmount)),
+            y + (radius * sin(i * twicePi / lineAmount)));
     }
-};
+    glEnd();
+}
+}; // namespace drawing
 
 //drawScene() handles the animation and the redrawing of the graphics window contents.
 void drawScene(void)
 {
     // Clear the rendering window
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glColor3f(255,255,255);
+    glColor3f(255, 255, 255);
 
     //Draw me
     glRecti(
-        me.body.location.getX(), 
-        me.body.location.getY(), 
-        me.body.location.getX()+me.body.getWidth(),
-        me.body.location.getY()+me.body.getHeight());
+        me.body.location.getX(),
+        me.body.location.getY(),
+        me.body.location.getX() + me.body.getWidth(),
+        me.body.location.getY() + me.body.getHeight());
     //Draw my name?
     //TODO: Add text library
 
@@ -103,11 +106,11 @@ void drawScene(void)
     glRecti(
         opponent.body.location.getX(),
         opponent.body.location.getY(),
-        opponent.body.location.getX()+opponent.body.getWidth(),
-        opponent.body.location.getY()+opponent.body.getHeight());
+        opponent.body.location.getX() + opponent.body.getWidth(),
+        opponent.body.location.getY() + opponent.body.getHeight());
 
     //Draw ball
-    drawing::drawFilledCircle(me.body.location.getX(),me.body.location.getY(),30);
+    drawing::drawFilledCircle(me.body.location.getX(), me.body.location.getY(), 30);
 
     // Flush the pipeline.  (Not usually necessary.)
     glFlush();
@@ -158,8 +161,6 @@ void resizeWindow(int w, int h)
     glOrtho(windowXmin, windowXmax, windowYmin, windowYmax, -1, 1);
 }
 
-
-
 /*
 	glPointSize(8);
 	glLineWidth(5);
@@ -176,7 +177,8 @@ int main(int argc, char **argv)
     ////////////////////////////// User Input and Networking //////////////////////////////
     cout << "Do you want to join(j) or create(c) a game?" << endl;
     char choice = getchar();
-    if(choice != 'c' && choice != 'j') {
+    if (choice != 'c' && choice != 'j')
+    {
         cerr << "You'r choice is incorrect." << endl;
         exit(1);
     }
@@ -185,19 +187,23 @@ int main(int argc, char **argv)
     cout << "Please enter ip (enter 'd' for default server ip): " << endl;
     cin >> tmp;
 
-    if(tmp == "d")
+    if (tmp == "d")
         server_ip = SERVER_DEFAULT_IP;
     else
         server_ip = tmp;
-    if(choice == 'j') {
+    if (choice == 'j')
+    {
         cout << "Joining a game..." << endl;
+
         start_client(server_ip, &me, &opponent, &ball);
-        
-        client_network_thread_sendto = thread(sendto_network_loop, &running, &me);
+
         client_network_thread_recvfrom = thread(recvfrom_network_loop, &running, &opponent);
-    } else {
+        client_network_thread_sendto = thread(sendto_network_loop, &running, &me);
+    }
+    else
+    {
         cout << "Creating a game..." << endl;
-        server_start(&server_ip);
+        server_start(&server_ip, &ball);
         goto finish;
     }
 
@@ -236,7 +242,7 @@ int main(int argc, char **argv)
     glutMainLoop();
 
 finish:
-	//Test visual studio
-	//Test 2
-	return (0);// This line is never reached by client, but by server yes.
+    //Test visual studio
+    //Test 2
+    return (0); // This line is never reached by client, but by server yes.
 }
